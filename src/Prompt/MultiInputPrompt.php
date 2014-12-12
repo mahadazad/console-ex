@@ -22,7 +22,12 @@ class MultiInputPrompt extends AbstractPrompt
     /**
      * @var array
      */
-    protected $msgs;
+    protected $messages;
+
+    /**
+     * @var string
+     */
+    protected $moreMessage;
 
     /**
      * @param PromptInterface $prompt
@@ -32,7 +37,8 @@ class MultiInputPrompt extends AbstractPrompt
     public function __construct(PromptInterface $prompt, $messages = array(), $moreMessage = 'more? [y,n]')
     {
         $this->prompt = $prompt;
-        $this->msgs = $messages;
+        $this->messages = $messages;
+        $this->moreMessage = $moreMessage;
     }
 
     /**
@@ -42,7 +48,7 @@ class MultiInputPrompt extends AbstractPrompt
     {
         $inputs = array();
         $more = 'n';
-        $msgsGiven = count($this->msgs) > 0;
+        $msgsGiven = count($this->messages) > 0;
 
         $isRequired = false;
         if (method_exists($this->prompt, 'getAllowEmpty')) {
@@ -51,7 +57,7 @@ class MultiInputPrompt extends AbstractPrompt
 
         do {
             if ($msgsGiven) {
-                $msg = array_shift($this->msgs);
+                $msg = array_shift($this->messages);
             } elseif (method_exists($this->prompt, 'getPromptText') && method_exists($this->prompt, 'setPromptText')) {
                 $msg = $this->prompt->getPromptText();
                 $this->prompt->setPromptText($msg);
@@ -64,14 +70,14 @@ class MultiInputPrompt extends AbstractPrompt
 
             if (!$msgsGiven) {
                 $more = Char::prompt(
-                    $moreMessage,
+                    $this->moreMessage,
                     'yn',
                     true,
                     false,
                     false
                 );
             }
-        } while ($more == 'y' || ($msgsGiven && !empty($this->msgs)));
+        } while ($more == 'y' || ($msgsGiven && !empty($this->messages)));
 
         return $this->lastResponse = $inputs;
     }

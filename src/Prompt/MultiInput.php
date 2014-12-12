@@ -35,6 +35,11 @@ class MultiInput extends AbstractPrompt
     protected $validateCallback;
 
     /**
+     * @var string
+     */
+    protected $moreMessage;
+
+    /**
      * @param string   $message          message shown to the user on input
      * @param string   $invalidMsg       message shown to the user on invalid input
      * @param boolean  $isOptional       is the input optional
@@ -47,6 +52,7 @@ class MultiInput extends AbstractPrompt
         $this->invalidMessage = $invalidMessage;
         $this->isOptional = $isOptional;
         $this->validateCallback = $validateCallback;
+        $this->moreMessage = $moreMessage;
     }
 
     /**
@@ -83,7 +89,7 @@ class MultiInput extends AbstractPrompt
             if (!empty($input)) {
                 // ask fore more
                 $more = Char::prompt(
-                    $moreMessage,
+                    $this->moreMessage,
                     'yn',
                     true,
                     false,
