@@ -42,7 +42,7 @@ class CallbackFilter extends AbstractPrompt
         $data = $this->prompt->show();
 
         if (is_array($data)) {
-            $data = array_filter($data, $filter);
+            $data = array_filter($data, $this->filter);
         }
 
         return $data;
