@@ -10,9 +10,9 @@ use Zend\Console\Prompt\AbstractPrompt;
 use Zend\Console\Prompt\PromptInterface;
 
 /**
- * Filteres the data provided by the prompt
+ * Callback function on provided prompt output
  */
-class CallbackFilter extends AbstractPrompt
+class Callback extends AbstractPrompt
 {
     /**
      * @var PromptInterface
@@ -22,16 +22,16 @@ class CallbackFilter extends AbstractPrompt
     /**
      * @var callable
      */
-    protected $filter;
+    protected $callback;
 
     /**
      * @param PromptInterface $prompt
-     * @param callable        $filter
+     * @param callable        $callback
      */
-    public function __construct(PromptInterface $prompt, callable $filter)
+    public function __construct(PromptInterface $prompt, callable $callback)
     {
         $this->prompt = $prompt;
-        $this->filter = $filter;
+        $this->callback = $callback;
     }
 
     /**
@@ -41,10 +41,6 @@ class CallbackFilter extends AbstractPrompt
     {
         $data = $this->prompt->show();
 
-        if (is_array($data)) {
-            $data = array_filter($data, $filter);
-        }
-
-        return $data;
+        return call_user_func($this->callback, $data);
     }
 }
