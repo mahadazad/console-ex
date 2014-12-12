@@ -31,7 +31,13 @@ class PromptComposite extends AbstractPrompt implements PromptCompositeInterface
     {
         if (is_string($option)) {
             $this->setPromptText($option);
-        } elseif ($option instanceof PromptComposite) {
+        }
+        elseif (is_array($option)) {
+            foreach ($option as $child) {
+                $this->add($child);
+            }
+        }
+        elseif ($option instanceof PromptComposite) {
             foreach ($option->getChildren() as $child) {
                 $this->add($child);
             }
