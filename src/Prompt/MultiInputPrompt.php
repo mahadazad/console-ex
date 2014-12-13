@@ -30,6 +30,11 @@ class MultiInputPrompt extends AbstractPrompt
     protected $moreMessage;
 
     /**
+     * @var boolean
+     */
+    protected $skipFirst;
+
+    /**
      * @param PromptInterface $prompt
      * @param array           $messages
      * @param string          $moreMessage message shown on more prompt
@@ -40,6 +45,7 @@ class MultiInputPrompt extends AbstractPrompt
         $this->prompt = $prompt;
         $this->messages = $messages;
         $this->moreMessage = $moreMessage;
+        $this->skipFirst = $skipFirst;
     }
 
     /**
@@ -57,7 +63,7 @@ class MultiInputPrompt extends AbstractPrompt
         }
 
         do {
-            if(!$skipFirst) {
+            if(!$this->skipFirst) {
                 if ($msgsGiven) {
                     $msg = array_shift($this->messages);
                 } elseif (method_exists($this->prompt, 'getPromptText') && method_exists($this->prompt, 'setPromptText')) {
@@ -71,8 +77,8 @@ class MultiInputPrompt extends AbstractPrompt
                 } while ($isRequired && empty($input));
 
             }
-            
-            $skipFirst = false;
+
+            $this->skipFirst = false;
 
             if (!$msgsGiven) {
                 $more = Char::prompt(
