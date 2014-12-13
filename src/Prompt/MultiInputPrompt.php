@@ -33,8 +33,9 @@ class MultiInputPrompt extends AbstractPrompt
      * @param PromptInterface $prompt
      * @param array           $messages
      * @param string          $moreMessage message shown on more prompt
+     * @param boolean         $skipFirst
      */
-    public function __construct(PromptInterface $prompt, $messages = array(), $moreMessage = 'more? [y,n]')
+    public function __construct(PromptInterface $prompt, $messages = array(), $moreMessage = 'more? [y,n]', $skipFirst = false)
     {
         $this->prompt = $prompt;
         $this->messages = $messages;
@@ -56,17 +57,22 @@ class MultiInputPrompt extends AbstractPrompt
         }
 
         do {
-            if ($msgsGiven) {
-                $msg = array_shift($this->messages);
-            } elseif (method_exists($this->prompt, 'getPromptText') && method_exists($this->prompt, 'setPromptText')) {
-                $msg = $this->prompt->getPromptText();
-                $this->prompt->setPromptText($msg);
-            }
+            if(!$skipFirst) {
+                if ($msgsGiven) {
+                    $msg = array_shift($this->messages);
+                } elseif (method_exists($this->prompt, 'getPromptText') && method_exists($this->prompt, 'setPromptText')) {
+                    $msg = $this->prompt->getPromptText();
+                    $this->prompt->setPromptText($msg);
+                }
 
-            do {
-                $input = $this->prompt->show();
-                $inputs[] = $input;
-            } while ($isRequired && empty($input));
+                do {
+                    $input = $this->prompt->show();
+                    $inputs[] = $input;
+                } while ($isRequired && empty($input));
+
+            }
+            
+            $skipFirst = false;
 
             if (!$msgsGiven) {
                 $more = Char::prompt(
